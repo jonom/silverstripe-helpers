@@ -1,0 +1,22 @@
+---
+Name: helpers
+After: "framework/*, cms/*"
+---
+SilverStripe\Security\Member:
+  extensions:
+    - JonoM\Helpers\Extensions\MemberEmailWithNameExtension
+SilverStripe\ORM\FieldType\DBString:
+  extensions:
+    - JonoM\Helpers\Extensions\TextHelpersExtension
+SilverStripe\CMS\Controllers\ContentController:
+  extensions:
+    - JonoM\Helpers\Extensions\PageControllerHelpersExtension
+SilverStripe\ORM\DataList:
+  extensions:
+    - JonoM\Helpers\Extensions\DataListCacheKeyExtension
+SilverStripe\Assets\Storage\DBFile:
+  extensions:
+    - JonoM\Helpers\Extensions\ImageIntrinsicExtension
+SilverStripe\Assets\Image:
+  extensions:
+    - JonoM\Helpers\Extensions\ImageIntrinsicExtension
