@@ -4,6 +4,7 @@ namespace JonoM\Helpers\Extensions;
 
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\FieldType\DBField;
 
 class ImageIntrinsicExtension extends DataExtension
 {
@@ -127,5 +128,12 @@ class ImageIntrinsicExtension extends DataExtension
         $data = $bgImg->getString();
         $type = $bgImg->getMimeType();
         return 'data:' . $type . ';base64,' . base64_encode($data);
+    }
+
+    public function SummaryThumbnail()
+    {
+        // Generated with https://placeholderimage.dev/
+        $placeholderHtml = '<img data-v-6d3ac3b0="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAC2klEQVRoQ+2YC08aQRSFzyygsLuwIBQsD3n4KIm19v//iqY1rVVLBSK+qqIusMtjt7lTsdqkukydxNiZZBPgcu/cc747QwI76do+XsBiSsgzo6iIPDMgUEQUEUkOqNGSZKxwWUVE2DpJiYqIJGOFyyoiwtZJSlREJBkrXFYREbZOUuL/R2SvdQjGAN8HegOH+2qZOiqFHH898Tx8ax1i4A7h+z7mImEe06Pz/PuN9hGy6SROzy8xnkwQDoVQKy3yOC2776DZOcZ44kHTGNJWHPlsOjC/wEQ+f2thOBqDMcYFXNp93nC1mINlGpjGkwkTIY3h/NLmTWyslmHfCKH31Dj9bTNwXEQiYawvL8EZjrDdaPPaCVOH6w75Z69SFgq5YGJmFrK+soRIOAx3OMKXRptvZsV1EDESUclnuQAS0jo8QS6dhKFHOZG4EcNy6TWPf90/gOMOsfmmit1WB72+g3q1iOj8HI9v7TXheT7erVUCUZlJCI3Pxurvwh+2G7z56FwERz8uUC3kYMUNvjE18XHnOxKGjsxCggspLWaQTiZ4fP/gGN3rHt7Xa9jabfJx02O/xoyW447geR6PB1kzCaFRWl8p39adCglpGs66V6jXSlzU9Mx82tm/J4RokfA/hZBgEj6lcbdxohRkPYkQIzaPg+MzLGZS/KF1cWWj2TlBdsGCacQ4kb8JmZ6vzXoN7KZrIkyjN71MHhPzJEJoZGg8NMawspTnt85eq4PReIK3q2X0HfdBIdQ0PWQI3VR0vogwXQxrlcJjGnj8n4WkEibK+SzOutdoH53e27SYyyCTSuCq139QCCXRZWH3B7f5dD3Xa0V+TQdZgYUEKUaH87o3ANMYTD3GCc2y6Hqn3xM6Z3cPfpAaTyokyIayvqOEyHJWtK4iIuqcrDxFRJazonUVEVHnZOUpIrKcFa2riIg6JytPEZHlrGhdRUTUOVl5iogsZ0XrvhgiPwGa8AJb/jK2WwAAAABJRU5ErkJggg==" alt="none">';
+        return $this->owner->exists() ? $this->owner->FocusFill(50, 50) : DBField::create_field('HTMLText', $placeholderHtml);
     }
 }
