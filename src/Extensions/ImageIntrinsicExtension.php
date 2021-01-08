@@ -73,9 +73,15 @@ class ImageIntrinsicExtension extends DataExtension
         $images = ArrayList::create();
         // Generate the images, starting with the minimum
         $width = $minWidth;
+
+        // Prevent loss of resampled image. Workaround for https://github.com/silverstripe/silverstripe-assets/commit/03d38f2a817f970b6e75cc6a44e784b0e2e9eae4
+        $backend = $this->owner->getImageBackend();
+        $resource = $backend->getImageResource();
+
         while ($width < $maxWidth && $width < $this->owner->getWidth()) {
             $images->push($this->owner->ScaleWidth($width));
             $width = ceil($width * $stepMultiplier);
+            $backend->setImageResource($resource);
         }
         // Add an image set at max width
         $images->push($this->owner->ScaleMaxWidth($maxWidth));
