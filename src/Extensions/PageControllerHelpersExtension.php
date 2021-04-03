@@ -7,6 +7,7 @@ use SilverStripe\Control\Director;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Environment;
 use SilverStripe\Core\Extension;
+use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\Requirements;
 use SilverStripe\View\SSViewer;
 
@@ -43,6 +44,8 @@ class PageControllerHelpersExtension extends Extension
         $fragments[] = json_encode($this->owner->request->params());
         // Reset cache every day to ensure date based content is accurate
         //$fragments[] = date('Y-m-d');
+        // The Site Config affects page titles
+        $fragments[] = SiteConfig::get()->max('LastEdited'); // Catch created / edited
         // Ensure menus are up to date
         $fragments[] = SiteTree::get()->max('LastEdited'); // Catch created / edited
         $fragments[] = SiteTree::get()->count(); // Catch deleted
