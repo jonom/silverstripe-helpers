@@ -18,14 +18,13 @@ class DataListCacheKeyExtension extends Extension
         if (!$prefix) {
             $prefix = $this->owner->dataClass();
         }
-        $fragments = [
+        return md5(serialize([
             // Namespace for this cacheblock
             $prefix,
             // This covers which objects are linked and their sort order
-            implode('-', $this->owner->Column('ID')),
+            $this->owner->column('ID'),
             // This catches edits
-            $this->owner->Max('LastEdited'),
-        ];
-        return implode('-_-', $fragments);
+            $this->owner->max('LastEdited'),
+        ]));
     }
 }

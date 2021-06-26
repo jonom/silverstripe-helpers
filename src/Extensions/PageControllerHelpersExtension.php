@@ -2,7 +2,6 @@
 
 namespace JonoM\Helpers\Extensions;
 
-use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Environment;
@@ -16,48 +15,82 @@ class PageControllerHelpersExtension extends Extension
     private static $allowed_actions = [];
 
     /**
-     * Build a cache key suitable for general page content.
-     * Caution:
-     * - Not suitable for non-page content (datalists) or user-customised content.
-     * - Doesn't include GET or POST vars so supplement key as required, e.g. for pages with pagination or search queries
+     * Generate a cache key for the current environment.
      *
-     * Supplement this cache key with additional parameters in the cache block where necessary, such as $CurrentMember.ID or $List('SomeClass').Max('LastEdited').
+     * @return string
+     */
+    public function EnvCacheKey()
+    {
+        return __FUNCTION__ . md5(serialize([
+            // Dev mode can affect output
+            Director::get_environment_type(),
+            // Split cache by protocol to prevent accidental mixed-content issues
+            Director::protocolAndHost(),
+            // Site Config may affect e.g. page titles
+            SiteConfig::get()->max('LastEdited'),
+        ]));
+    }
+
+    public function TodayCacheKey()
+    {
+        // Reset cache every day to ensure date based content is accurate
+        return __FUNCTION__ . date('Y-m-d');
+    }
+
+    /**
+     * Get a cache key which represents the approximate state of a page
      *
-     * Partial caching of nested relationships (loop within loop) is impractical, so exclude those from partial caching and cache dynamically only.
-     *
-     * Example of using extension:
-     *     public function updatePageCacheKey(&$fragments) {
-     *         $fragments[] = $this->owner->Query();
-     *     }
-     *
-     * @access public
+     * @param string $class
      * @return string
      */
     public function PageCacheKey()
     {
-        $fragments = [];
-        // Start with the class
-        $fragments[] = $this->owner->ClassName;
-        // Identify by ID, or URL as a fallback. Note that Security pages (and maybe others?) generate a random ID so this may be redundant
-        $fragments[] = $this->owner->ID ? $this->owner->ID : $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-        // Identify the action and ID
-        $fragments[] = json_encode($this->owner->request->params());
-        // Reset cache every day to ensure date based content is accurate
-        //$fragments[] = date('Y-m-d');
-        // The Site Config affects page titles
-        $fragments[] = SiteConfig::get()->max('LastEdited'); // Catch created / edited
-        // Ensure menus are up to date
-        $fragments[] = SiteTree::get()->max('LastEdited'); // Catch created / edited
-        $fragments[] = SiteTree::get()->count(); // Catch deleted
-        // Dev mode can affect output
-        $fragments[] = Director::get_environment_type();
-        // Split cache by protocol to prevent accidental mixed-content issues
-        $fragments[] = Director::protocol();
+        return __FUNCTION__ . md5(serialize([
+            static::class,
+            // Identify by ID, or URL as a fallback. Note that Security pages (and maybe others?) generate a random ID so the fallback may be redundant
+            $this->owner->ID ?: $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+            $this->owner->request->params(),
+            $this->owner->LastEdited,
+        ]));
+    }
 
-        // Extension hook
-        $this->owner->extend('updatePageCacheKey', $fragments);
+    /**
+     * Get a cache key which get the approximate state of a class.
+     * Will not capture things like sort order if changes bypass the ORM.
+     *
+     * @param string $class
+     * @return string
+     */
+    public function ClassCacheKey($class)
+    {
+        return __FUNCTION__ . md5(serialize([
+            $class,
+            $class::get()->max('LastEdited'), // Catch created / edited
+            $class::get()->count(), // Catch deleted
+        ]));
+    }
 
-        return md5(serialize($fragments));
+    /**
+     * Use on a ManyManyList or potentially a DataList HasManyList. Generate a cache key that covers:
+     * - Which items are in this list
+     * - The sort order of these items
+     * - The most recent LastEdited value
+     *
+     * Note that for a DataList or HasManyList ClassCacheKey() should generally be sufficient to invalidate when something changes.
+     *
+     * @param mixed $dataList
+     * @return void
+     */
+    public function ListCacheKey($dataList)
+    {
+        return md5(serialize([
+            // Namespace for this cacheblock
+            $dataList->dataClass(),
+            // This covers which objects are linked and their sort order
+            implode('-', $dataList->column('ID')),
+            // This catches edits
+            $dataList->max('LastEdited'),
+        ]));
     }
 
     /**
@@ -67,9 +100,6 @@ class PageControllerHelpersExtension extends Extension
     public function DontCache()
     {
         $cache = Environment::getEnv('SS_DISABLE_PARTIAL_CACHING');
-
-        // Extension hook
-        $this->owner->extend('updatePageDontCache', $cache);
 
         return $cache;
     }
