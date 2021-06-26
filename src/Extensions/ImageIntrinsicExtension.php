@@ -77,12 +77,11 @@ class ImageIntrinsicExtension extends DataExtension
         // Prevent loss of resampled image. Workaround for https://github.com/silverstripe/silverstripe-assets/commit/03d38f2a817f970b6e75cc6a44e784b0e2e9eae4
         $backend = $this->owner->getImageBackend();
         $originalResource = $backend->getImageResource();
-        $resource = $originalResource;
 
         while ($width < $maxWidth && $width < $this->owner->getWidth()) {
             $images->push($this->owner->ScaleWidth($width));
             $width = ceil($width * $stepMultiplier);
-            $backend->setImageResource($resource);
+            $backend->setImageResource($originalResource);
         }
         // Add an image set at max width
         $images->push($this->owner->ScaleMaxWidth($maxWidth));
@@ -135,10 +134,15 @@ class ImageIntrinsicExtension extends DataExtension
 
     public function BGBasicSourceEncoded()
     {
-        $bgImg = $this->BGBasicSource();
-        $data = $bgImg->getString();
-        $type = $bgImg->getMimeType();
-        return 'data:' . $type . ';base64,' . base64_encode($data);
+        return $this->BGBasicSource()->Base64Url();
+    }
+
+    public function Base64Url()
+    {
+        if (!$this->owner->exists()) return;
+        $data = base64_encode($this->owner->getString());
+        $type = $this->owner->getMimeType();
+        return "data:$type;base64,$data";
     }
 
     public function SummaryThumbnail()
