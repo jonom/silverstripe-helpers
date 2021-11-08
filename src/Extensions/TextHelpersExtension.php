@@ -71,4 +71,9 @@ class TextHelpersExtension extends Extension
     {
         return DBField::create_field(get_class($this->owner), trim($this->owner->value));
     }
+
+    public function Slug()
+    {
+        return DBField::create_field(get_class($this->owner), strtolower(preg_replace('/[^A-Za-z0-9-]+/', '-', $this->owner->value)));
+    }
 }
