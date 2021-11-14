@@ -3,10 +3,12 @@
 namespace JonoM\Helpers\Extensions;
 
 use JonoM\Helpers\Utility\Helpers;
+use SilverStripe\Core\Convert;
 use SilverStripe\Core\Extension;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
+use SilverStripe\ORM\FieldType\DBText;
 
 class TextHelpersExtension extends Extension
 {
@@ -64,16 +66,46 @@ class TextHelpersExtension extends Extension
      */
     public function Truncate($maxlength = 25, $threshold = 5)
     {
-        return Helpers::truncateString($this->owner->value, $maxlength, $threshold);
+        return Helpers::truncateString($this->BetterPlain(), $maxlength, $threshold);
     }
 
     public function Trim()
     {
-        return DBField::create_field(get_class($this->owner), trim($this->owner->value));
+        return DBField::create_field(DBText::class, trim($this->BetterPlain()));
     }
 
     public function Slug()
     {
-        return DBField::create_field(get_class($this->owner), strtolower(preg_replace('/[^A-Za-z0-9-]+/', '-', $this->owner->value)));
+        return DBField::create_field(DBText::class, strtolower(preg_replace('/[^A-Za-z0-9-]+/', '-', $this->BetterPlain())));
+    }
+
+    /**
+     * Like Plain() but adds newlines for headings as well.
+     */
+    public function BetterPlain()
+    {
+        if ($this->owner->config()->get('escape_type') == 'xml') {
+            $text = preg_replace('/\<br(\s*)?\/?\>/i', "\n", $this->owner->RAW());
+
+            // Convert heading and paragraph breaks to multi-lines
+            $text = preg_replace('/(\<\/[ph]\d?\>)/i', "$1\n\n", $text);
+
+            // Strip out HTML tags
+            $text = strip_tags($text);
+
+            // Implode >3 consecutive linebreaks into 2
+            $text = preg_replace('~(\R){2,}~u', "\n\n", $text);
+
+            // Decode HTML entities back to plain text
+            return trim(Convert::xml2raw($text));
+        }
+        return $this->owner;
+    }
+
+    public function ToOneLine()
+    {
+        $val = $this->owner->value;
+        $plain = $this->BetterPlain();
+        return DBField::create_field(DBText::class, Helpers::toOneLine($this->BetterPlain()));
     }
 }

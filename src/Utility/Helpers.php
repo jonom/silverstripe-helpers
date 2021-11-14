@@ -137,7 +137,7 @@ class Helpers
     {
         $xml = htmlspecialchars(trim($text), ENT_QUOTES, 'UTF-8');
         $xml = nl2br($xml);
-        return $xml ? '<p>' . preg_replace('#(<br \/>[\r\n]+){2}#', "</p>\r\n<p>", $xml) . '</p>' : false;
+        return $xml ? '<p>' . preg_replace('#(<br \/>\R+){2}#', "</p>\r\n<p>", $xml) . '</p>' : false;
     }
 
     /**
@@ -166,7 +166,7 @@ class Helpers
     {
         // Remove empty lines
         $xml = htmlspecialchars(trim($text), ENT_QUOTES, 'UTF-8');
-        return $xml ? '<li>' . preg_replace('([\r\n]+)', "</li>\r\n<li>", $xml) . '</li>' : false;
+        return $xml ? '<li>' . preg_replace('(\R+)', "</li>\r\n<li>", $xml) . '</li>' : false;
     }
 
     /**
@@ -178,7 +178,23 @@ class Helpers
      */
     public static function trimLines($text)
     {
-        return preg_replace('/(\h*[\r\n]+\h*)+/', PHP_EOL, trim($text));
+        return preg_replace('/(\h*\R+\h*)+/', PHP_EOL, trim($text));
+    }
+
+    /**
+     * Convert line breaks to a full stop + space
+     *
+     * @param string $text
+     * @return string
+     */
+    public static function toOneLine($text)
+    {
+        // Remove blank lines
+        $text = self::trimLines($text);
+        // Leave end of line punctuation intact
+        $text = preg_replace('/([!?.;:])\R/', '$1 ', $text);
+        // Add punctuation if missing
+        return preg_replace('/\R/', '. ', $text);
     }
 
     /**
