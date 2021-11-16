@@ -121,7 +121,7 @@ class PageControllerHelpersExtension extends Extension
     }
 
     /**
-     * Get closest existing value for a field or relation from this page or any ancestor.
+     * Get closest existing value for a field or relation from this page or any ancestor, ending at SiteConfig.
      * This allows you to make values and objects cascade down through children with the option to override.
      *
      * @access public
@@ -138,7 +138,8 @@ class PageControllerHelpersExtension extends Extension
             // Go up a level if no result yet
             $page = $page->Parent();
         }
-        return false;
+        $siteConfig = SiteConfig::current_site_config();
+        return $siteConfig->hasValue($property) ? $siteConfig->cachedCall($property) : false;
     }
 
     /**
