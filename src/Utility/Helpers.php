@@ -170,6 +170,31 @@ class Helpers
     }
 
     /**
+     * Convert each line in raw text to a span tag.
+     *
+     * Before:
+     * -------
+     * I am a line
+     * I am another line
+     * -------
+     *
+     * After:
+     * -------
+     * <span class="myClass">I am a line</span> <span class="myClass">I am another line</span>
+     * -------
+     *
+     * @param string $text Text to convert
+     *
+     * @return string
+     */
+    public static function raw2span($text, $class)
+    {
+        // Remove empty lines
+        $xml = htmlspecialchars(trim($text), ENT_QUOTES, 'UTF-8');
+        return $xml ? "<span class=\"$class\">" . preg_replace('(\R+)', "</span>\r\n<span class=\"$class\">", $xml) . '</span>' : false;
+    }
+
+    /**
      * Remove empty lines including those which only contain whitespace
      * and trim white space from the start and end of each line
      *

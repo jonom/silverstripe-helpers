@@ -27,6 +27,15 @@ class TextHelpersExtension extends Extension
      *
      * @return string
      */
+    public function Raw2Span($class = "")
+    {
+        return DBField::create_field(DBHTMLText::class, Helpers::raw2span($this->owner->value, $class));
+    }
+    /**
+     * Convert raw text to list items. Output needs to be wrapped in a ul or ol element.
+     *
+     * @return string
+     */
     public function Raw2Li()
     {
         return DBField::create_field(DBHTMLText::class, Helpers::raw2li($this->owner->value));
