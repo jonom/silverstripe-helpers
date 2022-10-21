@@ -34,7 +34,7 @@ class Helpers
     public static function removeProtocolFromURL($url)
     {
         // Remove protocol from URL, and trailing slash
-        $urlParts = explode('://', $url);
+        $urlParts = explode('://', "$url");
 
         return trim(end($urlParts), '/');
     }
@@ -82,7 +82,7 @@ class Helpers
         // Remove protocol
         $label = self::removeProtocolFromURL($url);
         // Remove trailing slash
-        $label = trim($label, '/');
+        $label = trim("$label", '/');
         // Lowercase
         $label = strtolower($label);
         // Truncate
@@ -135,7 +135,7 @@ class Helpers
      */
     public static function raw2p($text)
     {
-        $xml = htmlspecialchars(trim($text), ENT_QUOTES, 'UTF-8');
+        $xml = htmlspecialchars(trim("$text"), ENT_QUOTES, 'UTF-8');
         $xml = nl2br($xml);
         return $xml ? '<p>' . preg_replace('#(<br \/>\R+){2}#', "</p>\r\n<p>", $xml) . '</p>' : false;
     }
@@ -165,7 +165,7 @@ class Helpers
     public static function raw2li($text)
     {
         // Remove empty lines
-        $xml = htmlspecialchars(trim($text), ENT_QUOTES, 'UTF-8');
+        $xml = htmlspecialchars(trim("$text"), ENT_QUOTES, 'UTF-8');
         return $xml ? '<li>' . preg_replace('(\R+)', "</li>\r\n<li>", $xml) . '</li>' : false;
     }
 
@@ -190,7 +190,7 @@ class Helpers
     public static function raw2span($text, $class)
     {
         // Remove empty lines
-        $xml = htmlspecialchars(trim($text), ENT_QUOTES, 'UTF-8');
+        $xml = htmlspecialchars(trim("$text"), ENT_QUOTES, 'UTF-8');
         return $xml ? "<span class=\"$class\">" . preg_replace('(\R+)', "</span>\r\n<span class=\"$class\">", $xml) . '</span>' : false;
     }
 
@@ -203,7 +203,7 @@ class Helpers
      */
     public static function trimLines($text)
     {
-        return preg_replace('/(\h*\R+\h*)+/', PHP_EOL, trim($text));
+        return preg_replace('/(\h*\R+\h*)+/', PHP_EOL, trim("$text"));
     }
 
     /**
