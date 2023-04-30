@@ -21,10 +21,8 @@ class DataListCacheKeyExtension extends Extension
         return md5(serialize([
             // Namespace for this cacheblock
             $prefix,
-            // This covers which objects are linked and their sort order
-            $this->owner->column('ID'),
-            // This catches edits
-            $this->owner->max('LastEdited'),
+            // This covers which objects are linked, their sort order, and edited date
+            $this->owner->map('ID', 'LastEdited')->toArray(),
         ]));
     }
 }
