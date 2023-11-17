@@ -171,7 +171,7 @@ class PageControllerHelpersExtension extends Extension
     }
 
     /**
-     * Inset Google Analtytics head script tags if the SS_GOOGLE_ANALYTICS_ACCOUNT_ID env var is set.
+     * Inset Google Analytics head script tags if the SS_GOOGLE_ANALYTICS_ACCOUNT_ID env var is set.
      *
      * @return void
      */
@@ -181,16 +181,16 @@ class PageControllerHelpersExtension extends Extension
 
         if (preg_match('/UA-[0-9]{6,}-[0-9]{1,}/', $accountId)) {
             // Global site tag (gtag.js) - Google Analytics
-            $tags = <<<JS
+            $tags = <<<HTML
 <script async src="https://www.googletagmanager.com/gtag/js?id=$accountId"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  gtag('config', '$accountId');
+  gtag('config', '$accountId');
 </script>
-JS;
+HTML;
             Requirements::insertHeadTags($tags);
         }
     }

@@ -217,7 +217,7 @@ class Helpers
         // Remove blank lines
         $text = self::trimLines($text);
         // Leave end of line punctuation intact
-        $text = preg_replace('/([!?.;:])\R/', '$1 ', $text);
+        $text = preg_replace('/([!?.,;:])\R/', '$1 ', $text);
         // Add punctuation if missing
         return preg_replace('/\R/', '. ', $text);
     }

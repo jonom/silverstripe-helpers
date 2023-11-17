@@ -108,13 +108,11 @@ class TextHelpersExtension extends Extension
             // Decode HTML entities back to plain text
             return trim(Convert::xml2raw($text));
         }
-        return $this->owner;
+        return $this->owner->getValue();
     }
 
     public function ToOneLine()
     {
-        $val = $this->owner->value;
-        $plain = $this->BetterPlain();
         return DBField::create_field(DBText::class, Helpers::toOneLine($this->BetterPlain()));
     }
 }
