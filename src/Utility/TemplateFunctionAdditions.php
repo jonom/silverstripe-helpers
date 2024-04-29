@@ -15,6 +15,18 @@ use SilverStripe\View\TemplateGlobalProvider;
  */
 class TemplateFunctionAdditions implements TemplateGlobalProvider
 {
+    private static $cache = [];
+
+    protected static function getCache($func, $arg)
+    {
+        return self::$cache[$func . '--' . $arg] ?? null;
+    }
+
+    protected static function setCache($func, $arg, $value)
+    {
+        self::$cache[$func . '--' . $arg] = $value;
+    }
+
     public static function IsDev()
     {
         // Expose dev mode status to templates
@@ -28,7 +40,11 @@ class TemplateFunctionAdditions implements TemplateGlobalProvider
      */
     public static function EnvCacheKey()
     {
-        return __FUNCTION__ . md5(serialize([
+        $cached = self::getCache(__FUNCTION__, '');
+        if ($cached !== null) {
+            return $cached;
+        }
+        $value = __FUNCTION__ . md5(serialize([
             // Dev mode can affect output
             Director::get_environment_type(),
             // Split cache by protocol to prevent accidental mixed-content issues
@@ -36,6 +52,8 @@ class TemplateFunctionAdditions implements TemplateGlobalProvider
             // Site Config may affect e.g. page titles
             SiteConfig::get()->max('LastEdited'),
         ]));
+        self::setCache(__FUNCTION__, '', $value);
+        return $value;
     }
 
     public static function TodayCacheKey()
@@ -53,11 +71,17 @@ class TemplateFunctionAdditions implements TemplateGlobalProvider
      */
     public static function ClassCacheKey($class)
     {
-        return __FUNCTION__ . md5(serialize([
+        $cached = self::getCache(__FUNCTION__, $class);
+        if ($cached !== null) {
+            return $cached;
+        }
+        $value = __FUNCTION__ . md5(serialize([
             $class,
             $class::get()->max('LastEdited'), // Catch created / edited
             $class::get()->count(), // Catch deleted
         ]));
+        self::setCache(__FUNCTION__, $class, $value);
+        return $value;
     }
 
     /**
@@ -102,9 +126,15 @@ class TemplateFunctionAdditions implements TemplateGlobalProvider
      */
     public static function Single($className)
     {
-        return ClassInfo::exists($className)
+        $cached = self::getCache(__FUNCTION__, $className);
+        if ($cached !== null) {
+            return $cached;
+        }
+        $value = ClassInfo::exists($className)
             ? $className::get()->first()
             : false;
+        self::setCache(__FUNCTION__, $className, $value);
+        return $value;
     }
 
     public static function get_template_global_variables()
