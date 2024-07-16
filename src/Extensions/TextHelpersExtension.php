@@ -94,7 +94,7 @@ class TextHelpersExtension extends Extension
     public function BetterPlain()
     {
         if ($this->owner->config()->get('escape_type') == 'xml') {
-            $text = preg_replace('/\<br(\s*)?\/?\>/i', "\n", $this->owner->RAW());
+            $text = preg_replace('/\<br(\s*)?\/?\>/i', "\n", $this->owner->RAW() ?? '');
 
             // Convert heading and paragraph breaks to multi-lines
             $text = preg_replace('/(\<\/[ph]\d?\>)/i', "$1\n\n", $text);
@@ -108,7 +108,7 @@ class TextHelpersExtension extends Extension
             // Decode HTML entities back to plain text
             return trim(Convert::xml2raw($text));
         }
-        return $this->owner->getValue();
+        return $this->owner->getValue() ?? '';
     }
 
     public function ToOneLine()

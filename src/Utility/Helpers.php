@@ -42,7 +42,7 @@ class Helpers
     public static function addProtocolToURL($url)
     {
         // Add http:// protocol if not included
-        if (strpos($url, '://') === false) {
+        if ($url && strpos($url, '://') === false) {
             return 'http://' . $url;
         }
 
