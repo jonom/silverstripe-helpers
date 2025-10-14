@@ -4,12 +4,12 @@ namespace JonoM\Helpers\Extensions;
 
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ReadonlyField;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 
 /**
  * Show creation and edit date in CMS
  */
-class CreatedEditedExtension extends DataExtension
+class CreatedEditedExtension extends Extension
 {
     public function updateCMSFields(FieldList $fields)
     {

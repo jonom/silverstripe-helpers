@@ -3,10 +3,10 @@
 namespace JonoM\Helpers\Extensions;
 
 use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\ORM\FieldType\DBField;
 
-class ImageIntrinsicExtension extends DataExtension
+class ImageIntrinsicExtension extends Extension
 {
     private static $casting = [
         'Intrinsic' => 'HTMLText',

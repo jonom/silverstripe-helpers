@@ -4,7 +4,7 @@ namespace JonoM\Helpers\Extensions;
 
 use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 
 /**
  * Apply this extension to a class to have it invalidate a given cache each time an object of this class changes.
@@ -15,7 +15,7 @@ use SilverStripe\ORM\DataExtension;
  *        'JonoM\Helpers\Extensions\AppCacheInvalidationExtension("menuData","myAppData")',
  *    ];
  */
-class AppCacheInvalidationExtension extends DataExtension
+class AppCacheInvalidationExtension extends Extension
 {
     protected $cacheNamespaces = [];
 

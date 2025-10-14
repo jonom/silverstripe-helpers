@@ -2,9 +2,9 @@
 
 namespace JonoM\Helpers\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 
-class MemberEmailWithNameExtension extends DataExtension
+class MemberEmailWithNameExtension extends Extension
 {
     private static $db = [];
 

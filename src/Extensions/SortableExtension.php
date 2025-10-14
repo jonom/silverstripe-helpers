@@ -3,9 +3,9 @@
 namespace JonoM\Helpers\Extensions;
 
 use SilverStripe\Forms\FieldList;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 
-class SortableExtension extends DataExtension
+class SortableExtension extends Extension
 {
     private static $db = [
         'Sort' => 'Int',

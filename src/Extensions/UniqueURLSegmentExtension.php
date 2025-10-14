@@ -2,10 +2,10 @@
 
 namespace JonoM\Helpers\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\View\Parsers\URLSegmentFilter;
 
-class UniqueURLSegmentExtension extends DataExtension
+class UniqueURLSegmentExtension extends Extension
 {
     private static $db = [
         'URLSegment' => 'Varchar(255)',
