@@ -16,13 +16,13 @@ class DataListCacheKeyExtension extends Extension
     public function CacheKey($prefix = null)
     {
         if (!$prefix) {
-            $prefix = $this->owner->dataClass();
+            $prefix = $this->getOwner()->dataClass();
         }
         return md5(serialize([
             // Namespace for this cacheblock
             $prefix,
             // This covers which objects are linked, their sort order, and edited date
-            $this->owner->map('ID', 'LastEdited')->toArray(),
+            $this->getOwner()->map('ID', 'LastEdited')->toArray(),
         ]));
     }
 }

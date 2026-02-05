@@ -21,9 +21,9 @@ class SortableExtension extends Extension
     public function onBeforeWrite()
     {
         // Add new items to the end of the stack
-        $class = get_class($this->owner);
-        if (!$this->owner->Sort) {
-            $this->owner->Sort = $class::get()->max('Sort') + 1;
+        $class = get_class($this->getOwner());
+        if (!$this->getOwner()->Sort) {
+            $this->getOwner()->Sort = $class::get()->max('Sort') + 1;
         }
     }
 }

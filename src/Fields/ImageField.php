@@ -3,7 +3,7 @@
 namespace JonoM\Helpers\Fields;
 
 use SilverStripe\AssetAdmin\Forms\UploadField;
-use SilverStripe\ORM\SS_List;
+use SilverStripe\Model\SS_List;
 
 class ImageField extends UploadField
 {

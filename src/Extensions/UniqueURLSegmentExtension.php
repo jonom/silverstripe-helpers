@@ -14,13 +14,13 @@ class UniqueURLSegmentExtension extends Extension
     public function onBeforeWrite()
     {
         // If there is no URLSegment set, generate one from Title
-        if (!$this->owner->URLSegment) {
-            $this->owner->URLSegment = $this->generateURLSegment($this->owner->getTitle());
+        if (!$this->getOwner()->URLSegment) {
+            $this->getOwner()->URLSegment = $this->generateURLSegment($this->getOwner()->getTitle());
         }
 
         // validate segment or create default
-        if (!$this->owner->isInDB() || $this->owner->isChanged('URLSegment')) {
-            $this->owner->URLSegment = $this->generateURLSegment($this->owner->URLSegment);
+        if (!$this->getOwner()->isInDB() || $this->getOwner()->isChanged('URLSegment')) {
+            $this->getOwner()->URLSegment = $this->generateURLSegment($this->getOwner()->URLSegment);
             $this->makeURLSegmentUnique();
         }
     }
@@ -35,8 +35,8 @@ class UniqueURLSegmentExtension extends Extension
         $class = $this->ownerBaseClass;
         $items = $class::get()->filter('URLSegment', $URLSegment);
         // Exclude this item if already written
-        if ($this->owner->ID > 0) {
-            $items = $items->exclude('ID', $this->owner->ID);
+        if ($this->getOwner()->ID > 0) {
+            $items = $items->exclude('ID', $this->getOwner()->ID);
         }
 
         return $items->exists();
@@ -56,8 +56,8 @@ class UniqueURLSegmentExtension extends Extension
 
         // Fallback to generic page name if path is empty (= no valid, convertable characters)
         if (!$t || $t == '-' || $t == '-1') {
-            $class = strtolower($this->owner->ClassName);
-            $t = "$class-$this->owner->ID";
+            $class = strtolower($this->getOwner()->ClassName);
+            $t = "$class-{$this->getOwner()}->ID";
         }
 
         return $t;
@@ -68,13 +68,13 @@ class UniqueURLSegmentExtension extends Extension
         // Ensure that this object has a non-conflicting URLSegment value.
         $count = 2;
 
-        $URLSegment = $this->owner->URLSegment;
+        $URLSegment = $this->getOwner()->URLSegment;
 
         while ($this->URLSegmentInUse($URLSegment)) {
             $URLSegment = preg_replace('/-[0-9]+$/', null, $URLSegment) . '-' . $count;
             ++$count;
         }
 
-        $this->owner->URLSegment = $URLSegment;
+        $this->getOwner()->URLSegment = $URLSegment;
     }
 }

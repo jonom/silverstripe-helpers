@@ -24,9 +24,9 @@ class PageControllerHelpersExtension extends Extension
         return __FUNCTION__ . md5(serialize([
             static::class,
             // Identify by ID, or URL as a fallback. Note that Security pages (and maybe others?) generate a random ID so the fallback may be redundant
-            $this->owner->ID ?: $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
-            $this->owner->request->params(),
-            $this->owner->LastEdited,
+            $this->getOwner()->ID ?: $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
+            $this->getOwner()->request->params(),
+            $this->getOwner()->LastEdited,
         ]));
     }
 
@@ -41,7 +41,7 @@ class PageControllerHelpersExtension extends Extension
     {
         $args = func_get_args();
         foreach ($args as &$name) {
-            $name = $name . '-' . $this->owner->request->requestVar($name);
+            $name = $name . '-' . $this->getOwner()->request->requestVar($name);
         }
         return implode('_', $args);
     }
@@ -56,7 +56,7 @@ class PageControllerHelpersExtension extends Extension
      */
     public function Closest($property)
     {
-        $page = $this->owner;
+        $page = $this->getOwner();
         while ($page && $page->exists()) {
             if ($page->hasValue($property)) {
                 return $page->cachedCall($property);
@@ -75,7 +75,7 @@ class PageControllerHelpersExtension extends Extension
      */
     public function ClassAncestors()
     {
-        $ancestorClasses = $this->owner->getClassAncestry();
+        $ancestorClasses = $this->getOwner()->getClassAncestry();
         // We only want the ancestors until Page is reached
         $pageKey = array_search('page', array_keys($ancestorClasses));
         return implode(' ', array_slice($ancestorClasses, $pageKey));
@@ -122,6 +122,6 @@ HTML;
 
     public function LogoHeadingLevel()
     {
-        return ($this->owner->URLSegment == 'home') ? 1 : 2;
+        return ($this->getOwner()->URLSegment == 'home') ? 1 : 2;
     }
 }

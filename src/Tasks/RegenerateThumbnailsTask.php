@@ -16,7 +16,7 @@ class RegenerateThumbnailsTask extends BuildTask
 
     protected static string $commandName = 'regenerate-thumbnails';
 
-    protected $enabled = true;
+    private static bool $is_enabled = true;
 
     public function execute(InputInterface $input, PolyOutput $output): int
     {

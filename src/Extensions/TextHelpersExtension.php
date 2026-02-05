@@ -5,7 +5,7 @@ namespace JonoM\Helpers\Extensions;
 use JonoM\Helpers\Utility\Helpers;
 use SilverStripe\Core\Convert;
 use SilverStripe\Core\Extension;
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 use SilverStripe\ORM\FieldType\DBText;
@@ -20,7 +20,7 @@ class TextHelpersExtension extends Extension
      */
     public function Raw2P()
     {
-        return DBField::create_field(DBHTMLText::class, Helpers::raw2p($this->owner->value));
+        return DBField::create_field(DBHTMLText::class, Helpers::raw2p($this->getOwner()->value));
     }
     /**
      * Convert raw text to list items. Output needs to be wrapped in a ul or ol element.
@@ -29,7 +29,7 @@ class TextHelpersExtension extends Extension
      */
     public function Raw2Span($class = "")
     {
-        return DBField::create_field(DBHTMLText::class, Helpers::raw2span($this->owner->value, $class));
+        return DBField::create_field(DBHTMLText::class, Helpers::raw2span($this->getOwner()->value, $class));
     }
     /**
      * Convert raw text to list items. Output needs to be wrapped in a ul or ol element.
@@ -38,7 +38,7 @@ class TextHelpersExtension extends Extension
      */
     public function Raw2Li()
     {
-        return DBField::create_field(DBHTMLText::class, Helpers::raw2li($this->owner->value));
+        return DBField::create_field(DBHTMLText::class, Helpers::raw2li($this->getOwner()->value));
     }
     /**
      * Get an array list from raw text where each new line becomes a new array item
@@ -47,22 +47,22 @@ class TextHelpersExtension extends Extension
      */
     public function Lines2List()
     {
-        return ArrayList::create(Helpers::lines2array($this->owner->value));
+        return ArrayList::create(Helpers::lines2array($this->getOwner()->value));
     }
 
     public function AddProtocol()
     {
-        return Helpers::addProtocolToURL($this->owner->value);
+        return Helpers::addProtocolToURL($this->getOwner()->value);
     }
 
     public function RemoveProtocol()
     {
-        return Helpers::removeProtocolFromURL($this->owner->value);
+        return Helpers::removeProtocolFromURL($this->getOwner()->value);
     }
 
     public function NeatLink($charLimit = 25, $newWindow = true)
     {
-        return Helpers::neatLink($this->owner->value, $charLimit, $newWindow);
+        return Helpers::neatLink($this->getOwner()->value, $charLimit, $newWindow);
     }
 
     /**
@@ -93,8 +93,8 @@ class TextHelpersExtension extends Extension
      */
     public function BetterPlain()
     {
-        if ($this->owner->config()->get('escape_type') == 'xml') {
-            $text = preg_replace('/\<br(\s*)?\/?\>/i', "\n", $this->owner->RAW() ?? '');
+        if ($this->getOwner()->config()->get('escape_type') == 'xml') {
+            $text = preg_replace('/\<br(\s*)?\/?\>/i', "\n", $this->getOwner()->RAW() ?? '');
 
             // Convert heading and paragraph breaks to multi-lines
             $text = preg_replace('/(\<\/[ph]\d?\>)/i', "$1\n\n", $text);
@@ -108,7 +108,7 @@ class TextHelpersExtension extends Extension
             // Decode HTML entities back to plain text
             return trim(Convert::xml2raw($text));
         }
-        return $this->owner->getValue() ?? '';
+        return $this->getOwner()->getValue() ?? '';
     }
 
     public function ToOneLine()

@@ -20,8 +20,8 @@ class MemberEmailWithNameExtension extends Extension
      */
     public function EmailWithName()
     {
-        $name = $this->owner->getName();
-        $email = $this->owner->Email;
+        $name = $this->getOwner()->getName();
+        $email = $this->getOwner()->Email;
 
         return ($name) ? "$name <$email>" : $email;
     }

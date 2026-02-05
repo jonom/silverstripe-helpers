@@ -13,7 +13,7 @@ class CreatedEditedExtension extends Extension
 {
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldToTab('Root.Main', ReadonlyField::create('ROLastEdited', ' Last edited', $this->owner->obj('LastEdited')->Nice()));
-        $fields->addFieldToTab('Root.Main', ReadonlyField::create('ROCreated', 'Created', $this->owner->obj('Created')->Nice()));
+        $fields->addFieldToTab('Root.Main', ReadonlyField::create('ROLastEdited', ' Last edited', $this->getOwner()->obj('LastEdited')->Nice()));
+        $fields->addFieldToTab('Root.Main', ReadonlyField::create('ROCreated', 'Created', $this->getOwner()->obj('Created')->Nice()));
     }
 }

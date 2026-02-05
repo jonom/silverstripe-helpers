@@ -2,7 +2,7 @@
 
 namespace JonoM\Helpers\Extensions;
 
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\Core\Extension;
 use SilverStripe\ORM\FieldType\DBField;
 
@@ -21,8 +21,8 @@ class ImageIntrinsicExtension extends Extension
         // Get padding ratio for use with this technique: http://www.smashingmagazine.com/2013/09/16/responsive-images-performance-problem-case-study/
         // Mostly copied from https://github.com/Moosylvania/SilverStripe-Responsive-Image/blob/master/code/ResponsiveImage.php
         // Use in templates like style='padding-bottom:{$PaddingBottom}%'
-        $w = $this->owner->getWidth();
-        $h = $this->owner->getHeight();
+        $w = $this->getOwner()->getWidth();
+        $h = $this->getOwner()->getHeight();
         if (!$w || !$h) {
             return false;
         }
@@ -39,9 +39,9 @@ class ImageIntrinsicExtension extends Extension
      */
     public function Intrinsic($lazy = false, $wrapperElement = 'div')
     {
-        return $this->owner->renderWith('ImageIntrinsic', [
+        return $this->getOwner()->renderWith('ImageIntrinsic', [
             'WrapperElement' => $wrapperElement,
-            'ImageTag' => $this->owner->renderWith('Image', [
+            'ImageTag' => $this->getOwner()->renderWith('Image', [
                 'Lazy' => $lazy
             ])
         ]);
@@ -49,7 +49,7 @@ class ImageIntrinsicExtension extends Extension
 
     public function IntrinsicSrcSet($minWidth, $maxWidth, $lazy = false, $stepMultiplier = 1.2, $wrapperElement = 'div')
     {
-        return $this->owner->renderWith('ImageIntrinsic', [
+        return $this->getOwner()->renderWith('ImageIntrinsic', [
             'WrapperElement' => $wrapperElement,
             'ImageTag' => $this->SrcSet($minWidth, $maxWidth, $lazy, $stepMultiplier)
         ]);
@@ -67,7 +67,7 @@ class ImageIntrinsicExtension extends Extension
      */
     public function SrcSet($minWidth, $maxWidth, $lazy = false, $stepMultiplier = 1.2)
     {
-        if ((int) $minWidth < 1 || (int) $maxWidth < 1 || $this->owner->getWidth() < 1) {
+        if ((int) $minWidth < 1 || (int) $maxWidth < 1 || $this->getOwner()->getWidth() < 1) {
             return false;
         }
         $images = ArrayList::create();
@@ -75,16 +75,16 @@ class ImageIntrinsicExtension extends Extension
         $width = $minWidth;
 
         // Prevent loss of resampled image. Workaround for https://github.com/silverstripe/silverstripe-assets/commit/03d38f2a817f970b6e75cc6a44e784b0e2e9eae4
-        $backend = $this->owner->getImageBackend();
+        $backend = $this->getOwner()->getImageBackend();
         $originalResource = $backend->getImageResource();
 
-        while ($width < $maxWidth && $width < $this->owner->getWidth()) {
-            $images->push($this->owner->ScaleWidth($width));
+        while ($width < $maxWidth && $width < $this->getOwner()->getWidth()) {
+            $images->push($this->getOwner()->ScaleWidth($width));
             $width = ceil($width * $stepMultiplier);
             $backend->setImageResource($originalResource);
         }
         // Add an image set at max width
-        $images->push($this->owner->ScaleMaxWidth($maxWidth));
+        $images->push($this->getOwner()->ScaleMaxWidth($maxWidth));
 
         // Reset the resource
         $backend->setImageResource($originalResource);
@@ -103,7 +103,7 @@ class ImageIntrinsicExtension extends Extension
      */
     public function LazyBGColorStyle()
     {
-        $horiz = ($this->owner->getWidth() > $this->owner->getHeight());
+        $horiz = ($this->getOwner()->getWidth() > $this->getOwner()->getHeight());
         $bgSource = $this->BGGradientSource($horiz);
         if (!$bgSource) {
             return false;
@@ -124,12 +124,12 @@ class ImageIntrinsicExtension extends Extension
 
     public function BGGradientSource($horiz = false)
     {
-        return ($horiz) ? $this->owner->ResizedImage(2, 1) : $this->owner->ResizedImage(1, 2);
+        return ($horiz) ? $this->getOwner()->ResizedImage(2, 1) : $this->getOwner()->ResizedImage(1, 2);
     }
 
     public function BGBasicSource()
     {
-        return $this->owner->Fit(4, 4);
+        return $this->getOwner()->Fit(4, 4);
     }
 
     public function BGBasicSourceEncoded()
@@ -139,9 +139,9 @@ class ImageIntrinsicExtension extends Extension
 
     public function Base64Url()
     {
-        if (!$this->owner->exists()) return;
-        $data = base64_encode($this->owner->getString());
-        $type = $this->owner->getMimeType();
+        if (!$this->getOwner()->exists()) return;
+        $data = base64_encode($this->getOwner()->getString());
+        $type = $this->getOwner()->getMimeType();
         return "data:$type;base64,$data";
     }
 
@@ -149,6 +149,6 @@ class ImageIntrinsicExtension extends Extension
     {
         // Generated with https://placeholderimage.dev/
         $placeholderHtml = '<img data-v-6d3ac3b0="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAC2klEQVRoQ+2YC08aQRSFzyygsLuwIBQsD3n4KIm19v//iqY1rVVLBSK+qqIusMtjt7lTsdqkukydxNiZZBPgcu/cc747QwI76do+XsBiSsgzo6iIPDMgUEQUEUkOqNGSZKxwWUVE2DpJiYqIJGOFyyoiwtZJSlREJBkrXFYREbZOUuL/R2SvdQjGAN8HegOH+2qZOiqFHH898Tx8ax1i4A7h+z7mImEe06Pz/PuN9hGy6SROzy8xnkwQDoVQKy3yOC2776DZOcZ44kHTGNJWHPlsOjC/wEQ+f2thOBqDMcYFXNp93nC1mINlGpjGkwkTIY3h/NLmTWyslmHfCKH31Dj9bTNwXEQiYawvL8EZjrDdaPPaCVOH6w75Z69SFgq5YGJmFrK+soRIOAx3OMKXRptvZsV1EDESUclnuQAS0jo8QS6dhKFHOZG4EcNy6TWPf90/gOMOsfmmit1WB72+g3q1iOj8HI9v7TXheT7erVUCUZlJCI3Pxurvwh+2G7z56FwERz8uUC3kYMUNvjE18XHnOxKGjsxCggspLWaQTiZ4fP/gGN3rHt7Xa9jabfJx02O/xoyW447geR6PB1kzCaFRWl8p39adCglpGs66V6jXSlzU9Mx82tm/J4RokfA/hZBgEj6lcbdxohRkPYkQIzaPg+MzLGZS/KF1cWWj2TlBdsGCacQ4kb8JmZ6vzXoN7KZrIkyjN71MHhPzJEJoZGg8NMawspTnt85eq4PReIK3q2X0HfdBIdQ0PWQI3VR0vogwXQxrlcJjGnj8n4WkEibK+SzOutdoH53e27SYyyCTSuCq139QCCXRZWH3B7f5dD3Xa0V+TQdZgYUEKUaH87o3ANMYTD3GCc2y6Hqn3xM6Z3cPfpAaTyokyIayvqOEyHJWtK4iIuqcrDxFRJazonUVEVHnZOUpIrKcFa2riIg6JytPEZHlrGhdRUTUOVl5iogsZ0XrvhgiPwGa8AJb/jK2WwAAAABJRU5ErkJggg==" alt="none">';
-        return $this->owner->exists() ? $this->owner->FocusFill(50, 50) : DBField::create_field('HTMLText', $placeholderHtml);
+        return $this->getOwner()->exists() ? $this->getOwner()->FocusFill(50, 50) : DBField::create_field('HTMLText', $placeholderHtml);
     }
 }
